@@ -1,4 +1,4 @@
-
+//demo@boilingdata.com:demodata2022
 const logger   = require('./lib/logger')
 const {debug}  = require('./lib/debug')
 
@@ -10,12 +10,14 @@ const proxy = function({db_host, db_port, db_user, db_password, pool, hold_conne
 
   const onQuery = (query, params) => {
     return new Promise(async (resolve, reject) => {
+      console.log({params})
+      console.log(params.boilingdata.credentials.split(":"))
       if(!params.boilingdata.instance){
         let [bdUsername, bdPassword] = params.boilingdata.credentials.split(":")
         params.boilingdata.instance = new boilingdata.BoilingData({ username: bdUsername, password: bdPassword });
         await params.boilingdata.instance.connect();
       }
-      
+
       // sanity check
       if (!query) {
         reject()
