@@ -8,7 +8,7 @@ const {debug} = require('../../lib/debug')
  */
 
 const sendResult = async (cl_conn, db_result) => {
- 
+  console.log("mysql.js, sendResult", db_result)
     cl_conn.writeColumns(db_result.fields);
     await Promise.all(db_result.rows.map(async row => {
       cl_conn.writeTextRow(row)
@@ -25,7 +25,7 @@ const handle_events = function({server, onQuery, db}) {
 
   server.on('connection', (cl_conn) => {
     let db_conn = null
-
+    console.log("mysql.js, handle_events, server.on('connection')")
 
     cl_conn.serverHandshake({
       protocolVersion: 10,
@@ -45,12 +45,14 @@ const handle_events = function({server, onQuery, db}) {
       }
     })
     cl_conn.on('ping', async () => {
+      console.log("mysql.js, cl_conn.on('ping', ping")
       cl_conn.writeOk()
   
       cl_conn.sequenceId = 0
     })
 
     cl_conn.on('query', async (query) =>  {
+      console.log("mysql.js, cl_conn.on('query', ping")
       cl_conn.sequenceId = 1
       try{
         let result = await onQuery(query, {boilingdata: cl_conn.boilingdata, })
@@ -61,14 +63,17 @@ const handle_events = function({server, onQuery, db}) {
     })
 
     cl_conn.on('init_db', (schemaName) => {
+      console.log("mysql.js, cl_conn.on('init_db', (schemaName) ", schemaName)
       cl_conn.emit('query', `USE ${schemaName};`)
     })
 
     cl_conn.on('field_list', (table, fields) => {
+      console.log("mysql.js, cl_conn.on('field_list', (table, fields) ", table, fields)
       cl_conn.writeEof()
     })
 
     cl_conn.on('end', () => {
+      console.log("mysql.js, cl_conn.on('end'")
       if (db_conn) {
       
         db_conn = null
@@ -76,6 +81,7 @@ const handle_events = function({server, onQuery, db}) {
     })
 
     cl_conn.on('error', (err) => {
+      console.log("mysql.js, cl_conn.on('error', (err)", err)
       if (db_conn) {
        
         db_conn = null

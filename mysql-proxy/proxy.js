@@ -15,7 +15,7 @@ const proxy = function({db_host, db_port, db_user, db_password, pool, hold_conne
         params.boilingdata.instance = new boilingdata.BoilingData({ username: bdUsername, password: bdPassword });
         await params.boilingdata.instance.connect();
       }
-
+      
       // sanity check
       if (!query) {
         reject()
@@ -28,6 +28,7 @@ const proxy = function({db_host, db_port, db_user, db_password, pool, hold_conne
 
 
       let bdResult = await params.boilingdata.instance.execQueryPromise({ sql: query, keys: []})
+      console.log("BD RETURNED!!!!")
       let columns = Object.keys(bdResult[0])
       let rows = bdResult.map(row => { return Object.values(row) })
 
